@@ -213,8 +213,8 @@ nav{
 .intro-content p {
     font-size: clamp(16px, 2vw, 20px);
     line-height: 1.6;
-    font-weight: 400;
-    color: #555;
+    font-weight: 500;
+    color: #222;
     letter-spacing: 0;
 }
 
@@ -235,9 +235,10 @@ nav{
 }
 
 .project-content p{
-    color:#666;
+    color:#333;
     line-height:1.7;
     font-size:14px;
+    font-weight:500;
 }
 
 /* ========================= */
@@ -380,8 +381,10 @@ nav{
     position: fixed;
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
     background: #000;
     z-index: 9999;
     opacity: 0;
@@ -425,7 +428,7 @@ nav{
     font-size: 40px;
     font-weight: 300;
     cursor: pointer;
-    z-index: 10000;
+    z-index: 10002;
     transition: 0.3s;
     text-shadow: 0 2px 10px rgba(0,0,0,0.5);
     user-select: none;
@@ -458,6 +461,57 @@ nav{
 
 .vr-prev { left: 20px; }
 .vr-next { right: 20px; }
+
+/* ========================= */
+/* 360 INTERACTION PROMPT */
+/* ========================= */
+
+#vr-interaction-prompt {
+    position: absolute;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    z-index: 10005;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+
+#vr-interaction-prompt.show-prompt {
+    opacity: 0.85;
+    visibility: visible;
+}
+
+.hand-icon {
+    width: 36px;
+    height: 36px;
+    stroke: white;
+    fill: none;
+    stroke-width: 1.5;
+    animation: dragHand 3s infinite cubic-bezier(0.4, 0, 0.2, 1);
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.6));
+}
+
+.prompt-text {
+    color: white;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 500;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+}
+
+@keyframes dragHand {
+    0% { transform: translateX(0px); }
+    25% { transform: translateX(-20px) rotate(-5deg); }
+    75% { transform: translateX(20px) rotate(5deg); }
+    100% { transform: translateX(0px); }
+}
 
 /* ========================= */
 /* ABOUT / CONTACT (CENTERED) */
@@ -563,6 +617,39 @@ footer{
 }
 
 /* ========================= */
+/* IMAGE LIGHTBOX OVERLAY */
+/* ========================= */
+
+#image-lightbox {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.95);
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.4s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: zoom-out;
+}
+
+#image-lightbox.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+#lightbox-img {
+    max-width: 90%;
+    max-height: 90vh;
+    object-fit: contain;
+    box-shadow: 0 10px 50px rgba(0,0,0,0.5);
+}
+
+/* ========================= */
 /* MOBILE */
 /* ========================= */
 
@@ -603,6 +690,17 @@ footer{
     .projects-list{
         gap:100px;
     }
+
+    .vr-close {
+        top: 20px;
+        right: 20px;
+        font-size: 35px;
+    }
+
+    .vr-nav {
+        font-size: 35px;
+        padding: 10px;
+    }
 }
 
 </style>
@@ -616,7 +714,24 @@ footer{
     <div class="vr-nav vr-prev" onclick="prevVR()">&#10094;</div>
     <div class="vr-nav vr-next" onclick="nextVR()">&#10095;</div>
     <div id="vr-loading" class="vr-loading-hidden">LOADING 360°...</div>
+    
+    <div id="vr-interaction-prompt">
+        <svg class="hand-icon" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
+            <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
+            <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
+            <path d="M18 11v6.5a6.5 6.5 0 0 1-6.5 6.5h-1a6.5 6.5 0 0 1-6.5-6.5v-8.5a2 2 0 0 1 2-2h0a2 2 0 0 1 2 2v3"></path>
+        </svg>
+        <div class="prompt-text">Drag to rotate</div>
+    </div>
+
     <div id="panorama"></div>
+</div>
+
+<!-- IMAGE LIGHTBOX OVERLAY -->
+<div id="image-lightbox" onclick="closeLightbox()">
+    <div class="vr-close">×</div>
+    <img id="lightbox-img" src="" alt="Fullscreen View">
 </div>
 
 <div class="container">
@@ -657,7 +772,7 @@ footer{
             </div>
         </div>
 
-        <div class="hero-image image-container">
+        <div class="hero-image image-container" onclick="openLightbox(this.querySelector('img').src)" style="cursor: zoom-in;">
             <img src="images/herokitchen.png" alt="Luxury Interior Visualization">
         </div>
 
@@ -684,7 +799,7 @@ footer{
 
         <!-- Scene 1: Huge Hero Image -->
         <div class="layout-full">
-            <div class="image-full image-container">
+            <div class="image-full image-container" onclick="openLightbox(this.querySelector('img').src)" style="cursor: zoom-in;">
                 <img src="images/4.png" alt="Rosedale Residence">
             </div>
             <div class="project-meta">
@@ -703,15 +818,15 @@ footer{
                 <h3>Moody Interiors</h3>
                 <p>Exploring dark tones, brutalist textures, and natural light.</p>
             </div>
-            <div class="image-container">
+            <div class="image-container" onclick="openLightbox(this.querySelector('img').src)" style="cursor: zoom-in;">
                 <img src="images/distopiankitchan.png" alt="Kitchen Detail">
             </div>
         </div>
 
         <!-- Scene 4: 360 Immersive -->
         <div class="layout-360">
-            <div class="image-full image-container">
-                <div class="badge-360" onclick="openVR(0)">Explore in 360°</div>
+            <div class="image-full image-container" onclick="openVR(0)" style="cursor: pointer;">
+                <div class="badge-360">Explore in 360°</div>
                 <!-- Using one of the specific 360 images as the fallback cover -->
                 <img src="images/360photoconverterlivingroom.jpg" alt="Penthouse 360">
             </div>
@@ -726,11 +841,11 @@ footer{
 
         <!-- Scene 3: Asymmetric Crop -->
         <div class="layout-asymmetric">
-            <div class="image-large image-container">
+            <div class="image-large image-container" onclick="openLightbox(this.querySelector('img').src)" style="cursor: zoom-in;">
                 <img src="images/kitchencloseups.png" alt="Annex Loft">
             </div>
             <div class="side-content">
-                <div class="image-detail image-container">
+                <div class="image-detail image-container" onclick="openLightbox(this.querySelector('img').src)" style="cursor: zoom-in;">
                     <img src="https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?q=80&w=1000&auto=format&fit=crop" alt="Material Crop">
                 </div>
                 <div class="project-content">
@@ -801,6 +916,7 @@ footer{
     ];
     let currentIndex = 0;
     let viewer = null;
+    let hasInteractedWithVR = false;
 
     function openVR(index = 0) {
         currentIndex = index;
@@ -830,12 +946,42 @@ footer{
             "type": "equirectangular",
             "panorama": images360[currentIndex],
             "autoLoad": true,
-            "showControls": false // We use our own custom UI arrows
+            "showControls": false, // We use our own custom UI arrows
+            "hfov": 85,
+            "minHfov": 50,
+            "maxHfov": 100,
+            "pitch": 0,
+            "yaw": 0,
+            "autoRotate": hasInteractedWithVR ? 0 : -1.5,
+            "autoRotateInactivityDelay": 0
         });
         
         // Hide loading indicator when image finishes loading
         viewer.on('load', function() {
             document.getElementById('vr-loading').classList.add('vr-loading-hidden');
+
+            if (!hasInteractedWithVR) {
+                const prompt = document.getElementById('vr-interaction-prompt');
+                prompt.classList.add('show-prompt');
+
+                const vrContainer = document.getElementById('vr-overlay');
+                
+                const handleInteraction = (e) => {
+                    // Ignore close button interaction
+                    if (e.target.classList.contains('vr-close')) return;
+                    
+                    hasInteractedWithVR = true;
+                    prompt.classList.remove('show-prompt');
+                    
+                    vrContainer.removeEventListener('mousedown', handleInteraction);
+                    vrContainer.removeEventListener('touchstart', handleInteraction);
+                    vrContainer.removeEventListener('wheel', handleInteraction);
+                };
+
+                vrContainer.addEventListener('mousedown', handleInteraction);
+                vrContainer.addEventListener('touchstart', handleInteraction, {passive: true});
+                vrContainer.addEventListener('wheel', handleInteraction, {passive: true});
+            }
         });
     }
 
@@ -857,6 +1003,18 @@ footer{
         }).catch(function(err) {
             console.error("Could not copy email", err);
         });
+    }
+
+    function openLightbox(src) {
+        document.getElementById('lightbox-img').src = src;
+        document.getElementById('image-lightbox').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+        document.getElementById('image-lightbox').classList.remove('active');
+        document.body.style.overflow = '';
+        setTimeout(() => { document.getElementById('lightbox-img').src = ""; }, 400);
     }
 </script>
 
