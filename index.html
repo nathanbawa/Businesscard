@@ -13,6 +13,8 @@
 
 <!-- Pannellum CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css"/>
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
 <style>
 
@@ -82,7 +84,7 @@ nav{
 .logo{
     display:flex;
     flex-direction:column;
-    gap:10px;
+    gap:2px;
 }
 
 .logo-text{
@@ -123,19 +125,19 @@ nav{
 /* ========================= */
 
 .hero{
-    min-height:75vh;
+    min-height:90vh;
     display:flex;
     align-items:center;
     position:relative;
-    padding-bottom:60px;
-    padding-top:40px;
+    padding-bottom:30px;
+    padding-top:20px;
 }
 
 .hero-grid{
     width:100%;
     display:grid;
     grid-template-columns:1fr 1fr;
-    gap:100px;
+    gap:50px;
     align-items:end;
 }
 
@@ -150,7 +152,7 @@ nav{
 
 .hero-buttons{
     display:flex;
-    margin-top:50px;
+    margin-top:25px;
 }
 
 .hero-buttons a{
@@ -201,7 +203,7 @@ nav{
 .intro-statement {
     display: flex;
     justify-content: center;
-    padding: 20px 0 60px 0;
+    padding: 10px 0 30px 0;
 }
 
 .intro-content {
@@ -248,7 +250,7 @@ nav{
 .projects-list{
     display:flex;
     flex-direction:column;
-    gap:80px;
+    gap:40px;
 }
 
 .image-container{
@@ -264,7 +266,7 @@ nav{
 .layout-full{
     display:flex;
     flex-direction:column;
-    gap:30px;
+    gap:15px;
 }
 
 .layout-full .image-full{
@@ -281,14 +283,14 @@ nav{
 .layout-split{
     display:grid;
     grid-template-columns:2.5fr 7.5fr;
-    gap:80px;
+    gap:40px;
     align-items:start;
 }
 
 .split-images{
     display:grid;
     grid-template-columns:1fr 1fr;
-    gap:20px;
+    gap:10px;
 }
 
 .split-images .image-container{
@@ -299,7 +301,7 @@ nav{
 .layout-asymmetric{
     display:grid;
     grid-template-columns:7.5fr 2.5fr;
-    gap:60px;
+    gap:30px;
 }
 
 .layout-asymmetric .image-large{
@@ -314,14 +316,14 @@ nav{
 
 .layout-asymmetric .image-detail{
     aspect-ratio:4/5;
-    margin-bottom:40px;
+    margin-bottom:20px;
 }
 
 /* Project 4: 360 Immersive */
 .layout-360{
     display:flex;
     flex-direction:column;
-    gap:30px;
+    gap:15px;
 }
 
 .layout-360 .image-full{
@@ -339,29 +341,33 @@ nav{
 /* ========================= */
 
 .badge-360{
-    position:absolute;
-    bottom:25px;
-    left:25px;
-    background:rgba(255,255,255,0.75);
-    backdrop-filter:blur(8px);
-    border:1px solid rgba(255,255,255,0.4);
-    color:#111;
-    padding:10px 18px;
-    border-radius:100px;
+    background:#111;
+    color:#fff;
+    padding:15px 25px;
+    border-radius:0; /* Squared */
     font-size:10px;
     letter-spacing:3px;
     text-transform:uppercase;
-    display:flex;
+    display:inline-flex;
     align-items:center;
-    gap:8px;
-    transition:0.4s;
+    gap:10px;
+    transition:0.2s ease;
     cursor:pointer;
-    z-index:10;
+    align-self:flex-start;
+    box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.15);
+    transform: translateY(0);
 }
 
 .badge-360:hover{
-    background:rgba(255,255,255,0.95);
-    border:1px solid rgba(255,255,255,0.8);
+    background:#222;
+    box-shadow: 6px 6px 0px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.badge-360:active{
+    background:#000;
+    box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.15);
+    transform: translateY(4px);
 }
 
 .badge-360::before{
@@ -369,8 +375,42 @@ nav{
     display:inline-block;
     width:5px;
     height:5px;
-    background:#111;
+    background:#fff;
     border-radius:50%;
+}
+
+/* ========================= */
+/* IMAGE CLICK INDICATOR */
+/* ========================= */
+
+.click-indicator {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(17, 17, 17, 0.5);
+    backdrop-filter: blur(4px);
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    z-index: 5;
+    pointer-events: none;
+    animation: pulseClick 2s infinite ease-in-out;
+}
+
+.click-indicator i {
+    font-size: 24px;
+    color: white;
+}
+
+@keyframes pulseClick {
+    0% { transform: translate(-50%, -50%) scale(0.95); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.3); }
+    70% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 0 15px rgba(255, 255, 255, 0); }
+    100% { transform: translate(-50%, -50%) scale(0.95); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
 }
 
 /* ========================= */
@@ -522,14 +562,14 @@ nav{
     flex-direction: column;
     align-items: center;
     text-align: center;
-    padding-top: 80px;
+    padding-top: 40px;
     border-top: 1px solid rgba(0,0,0,0.06);
     max-width: 600px;
     margin: 0 auto;
 }
 
 .profile-centered {
-    margin-bottom: 40px;
+    margin-bottom: 20px;
 }
 
 .profile-pic-large {
@@ -537,7 +577,7 @@ nav{
     height: 100px;
     border-radius: 50%;
     object-fit: cover;
-    margin: 0 auto 20px auto;
+    margin: 0 auto 10px auto;
 }
 
 .profile-centered h3 {
@@ -558,21 +598,21 @@ nav{
     letter-spacing: -1.5px;
     font-weight: 500;
     color: #111;
-    margin-bottom: 30px;
+    margin-bottom: 15px;
 }
 
 .about-text-centered p {
     font-size: 16px;
     line-height: 1.8;
     color: #555;
-    margin-bottom: 50px;
+    margin-bottom: 25px;
 }
 
 .circle-links {
     display: flex;
     gap: 20px;
     justify-content: center;
-    margin-bottom: 40px;
+    margin-bottom: 20px;
 }
 
 .circle-btn {
@@ -600,7 +640,7 @@ nav{
 
 .footer-logo-icon {
     color: #111;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 /* ========================= */
@@ -608,7 +648,7 @@ nav{
 /* ========================= */
 
 footer{
-    padding:60px 0;
+    padding:30px 0;
     text-align:center;
     color:#888;
     font-size:10px;
@@ -660,7 +700,7 @@ footer{
     .layout-asymmetric,
     .about-section{
         grid-template-columns:1fr;
-        gap:60px;
+        gap:20px;
     }
 
     .layout-asymmetric .side-content{
@@ -675,6 +715,28 @@ footer{
         grid-template-columns:1fr;
     }
 
+    nav {
+        padding: 20px 0;
+    }
+
+    .nav-profile-pic {
+        width: 70px;
+        max-width: 70px;
+        height: auto;
+        aspect-ratio: 1/1;
+    }
+
+    .hero {
+        min-height: auto;
+        padding-top: 30px;
+        padding-bottom: 30px;
+        align-items: flex-start;
+    }
+
+    .hero-text h1 {
+        margin-bottom: 20px;
+    }
+
     .hero-image{
         aspect-ratio:1/1;
     }
@@ -684,11 +746,11 @@ footer{
     }
 
     .section{
-        padding:80px 0;
+        padding:25px 0;
     }
 
     .projects-list{
-        gap:100px;
+        gap:30px;
     }
 
     .vr-close {
@@ -797,6 +859,25 @@ footer{
     
     <div class="projects-list">
 
+        <!-- Scene 4: 360 Immersive -->
+        <div class="layout-360">
+            <div class="image-full image-container" onclick="openVR(0)" style="cursor: pointer;">
+                <div class="click-indicator">
+                    <i class="bi bi-hand-index"></i>
+                </div>
+                <!-- Using one of the specific 360 images as the fallback cover -->
+                <img src="images/360photoconverterlivingroom.jpg" alt="Penthouse 360">
+            </div>
+            <div class="badge-360" onclick="openVR(0)">Explore in 360°</div>
+            <div class="project-meta">
+                <div class="project-content">
+                    <div class="section-tag">Interactive Environment</div>
+                    <h3>Interactive 360°</h3>
+                    <p>Step inside fully rendered panoramic spaces.</p>
+                </div>
+            </div>
+        </div>
+
         <!-- Scene 1: Huge Hero Image -->
         <div class="layout-full">
             <div class="image-full image-container" onclick="openLightbox(this.querySelector('img').src)" style="cursor: zoom-in;">
@@ -823,21 +904,7 @@ footer{
             </div>
         </div>
 
-        <!-- Scene 4: 360 Immersive -->
-        <div class="layout-360">
-            <div class="image-full image-container" onclick="openVR(0)" style="cursor: pointer;">
-                <div class="badge-360">Explore in 360°</div>
-                <!-- Using one of the specific 360 images as the fallback cover -->
-                <img src="images/360photoconverterlivingroom.jpg" alt="Penthouse 360">
-            </div>
-            <div class="project-meta">
-                <div class="project-content">
-                    <div class="section-tag">Interactive Environment</div>
-                    <h3>Interactive 360°</h3>
-                    <p>Step inside fully rendered panoramic spaces.</p>
-                </div>
-            </div>
-        </div>
+
 
         <!-- Scene 3: Asymmetric Crop -->
         <div class="layout-asymmetric">
