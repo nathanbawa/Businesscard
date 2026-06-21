@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
-<title>UrbanStage 3D | Interior Visualization</title>
+<title>Nathan Bawa | Interior Visualization</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -742,7 +742,7 @@ footer{
 
 <nav>
     <div class="logo">
-        <div class="logo-text">URBANSTAGE 3D</div>
+        <div class="logo-text">NATHAN BAWA</div>
         <img src="images/nathan bawa image.jpg" alt="Nathan Bawa" class="nav-profile-pic">
     </div>
 
@@ -868,7 +868,7 @@ footer{
         
         <div class="about-text-centered">
             <h2>START A PROJECT</h2>
-            <p>UrbanStage 3D focuses on helping interior designers, architects, and developers communicate spaces emotionally before construction begins.</p>
+            <p>Nathan Bawa focuses on helping interior designers, architects, and developers communicate spaces emotionally before construction begins.</p>
         </div>
 
         <div class="profile-centered">
@@ -897,7 +897,7 @@ footer{
 </section>
 
 <footer>
-    UrbanStage 3D © 2026 — Spatial Communication
+    Nathan Bawa © 2026 — Spatial Communication
 </footer>
 
 </div>
@@ -968,19 +968,34 @@ footer{
                 
                 const handleInteraction = (e) => {
                     // Ignore close button interaction
-                    if (e.target.classList.contains('vr-close')) return;
+                    if (e && e.target && e.target.classList && e.target.classList.contains('vr-close')) return;
                     
                     hasInteractedWithVR = true;
                     prompt.classList.remove('show-prompt');
                     
-                    vrContainer.removeEventListener('mousedown', handleInteraction);
-                    vrContainer.removeEventListener('touchstart', handleInteraction);
-                    vrContainer.removeEventListener('wheel', handleInteraction);
+                    // Explicitly stop auto-rotation
+                    if (viewer) {
+                        // Some versions of Pannellum support stopAutoRotate
+                        if (typeof viewer.stopAutoRotate === 'function') {
+                            viewer.stopAutoRotate();
+                        } else if (typeof viewer.setPitch === 'function') {
+                            // Setting pitch/yaw interrupts auto-rotate
+                            viewer.setPitch(viewer.getPitch());
+                            viewer.setYaw(viewer.getYaw());
+                        }
+                    }
+                    
+                    vrContainer.removeEventListener('pointerdown', handleInteraction, { capture: true });
+                    vrContainer.removeEventListener('mousedown', handleInteraction, { capture: true });
+                    vrContainer.removeEventListener('touchstart', handleInteraction, { capture: true });
+                    vrContainer.removeEventListener('wheel', handleInteraction, { capture: true });
                 };
 
-                vrContainer.addEventListener('mousedown', handleInteraction);
-                vrContainer.addEventListener('touchstart', handleInteraction, {passive: true});
-                vrContainer.addEventListener('wheel', handleInteraction, {passive: true});
+                // Use capture phase (true) because Pannellum canvas might stop event propagation
+                vrContainer.addEventListener('pointerdown', handleInteraction, { capture: true });
+                vrContainer.addEventListener('mousedown', handleInteraction, { capture: true });
+                vrContainer.addEventListener('touchstart', handleInteraction, { capture: true, passive: true });
+                vrContainer.addEventListener('wheel', handleInteraction, { capture: true, passive: true });
             }
         });
     }
