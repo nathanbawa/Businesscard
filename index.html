@@ -418,23 +418,31 @@ nav{
 /* ========================= */
 
 #vr-overlay {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    background: #000;
+    z-index: 1;
+    opacity: 1;
+    visibility: visible;
+}
+
+#vr-overlay.vr-modal {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    width: 100%;
-    height: 100%;
-    background: #000;
     z-index: 9999;
-    opacity: 0;
-    visibility: hidden;
-    transition: 0.5s ease;
 }
 
 #vr-overlay.vr-active {
-    opacity: 1;
-    visibility: visible;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9999;
 }
 
 #panorama {
@@ -788,6 +796,10 @@ footer{
     </div>
 
     <div id="panorama"></div>
+    <div id="hero-scroll-cue" style="position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); color: white; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; z-index: 5; animation: pulseClick 2s infinite ease-in-out; pointer-events: none;">
+        ↓ Scroll to discover more
+    </div>
+
 </div>
 
 <!-- IMAGE LIGHTBOX OVERLAY -->
@@ -973,6 +985,7 @@ footer{
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
 
 <script>
+    
     // List of the specific 360 local images
     const images360 = [
         "images/360photoconverterhoteroom.jpg",
@@ -981,24 +994,43 @@ footer{
         "images/360kitchen.png",
         "images/3.png"
     ];
-    let currentIndex = 0;
+    let currentIndex = -1; // -1 means hero mode (fb30.png)
     let viewer = null;
     let hasInteractedWithVR = false;
+
+    // Load hero on startup
+    window.addEventListener('DOMContentLoaded', () => {
+        document.querySelector('.vr-close').style.display = 'none';
+        document.querySelector('.vr-prev').style.display = 'none';
+        document.querySelector('.vr-next').style.display = 'none';
+        loadPanorama();
+    });
 
     function openVR(index = 0) {
         currentIndex = index;
         document.getElementById('vr-overlay').classList.add('vr-active');
         document.body.style.overflow = 'hidden'; // prevent background scrolling
+        
+        document.querySelector('.vr-close').style.display = 'block';
+        document.querySelector('.vr-prev').style.display = 'block';
+        document.querySelector('.vr-next').style.display = 'block';
+        document.getElementById('hero-scroll-cue').style.display = 'none';
+        
         loadPanorama();
     }
 
     function closeVR() {
         document.getElementById('vr-overlay').classList.remove('vr-active');
         document.body.style.overflow = ''; // restore scrolling
-        if (viewer) {
-            viewer.destroy();
-            viewer = null;
-        }
+        
+        // Revert to hero
+        currentIndex = -1;
+        document.querySelector('.vr-close').style.display = 'none';
+        document.querySelector('.vr-prev').style.display = 'none';
+        document.querySelector('.vr-next').style.display = 'none';
+        document.getElementById('hero-scroll-cue').style.display = 'block';
+        
+        loadPanorama();
     }
 
     function loadPanorama() {
@@ -1009,18 +1041,21 @@ footer{
         // Show loading indicator
         document.getElementById('vr-loading').classList.remove('vr-loading-hidden');
         
+        const imgSrc = currentIndex === -1 ? "images/fb30.png" : images360[currentIndex];
+        
         viewer = pannellum.viewer('panorama', {
             "type": "equirectangular",
-            "panorama": images360[currentIndex],
+            "panorama": imgSrc,
             "autoLoad": true,
-            "showControls": false, // We use our own custom UI arrows
+            "showControls": false,
             "hfov": 85,
             "minHfov": 50,
             "maxHfov": 100,
             "pitch": 0,
             "yaw": 0,
             "autoRotate": hasInteractedWithVR ? 0 : -1.5,
-            "autoRotateInactivityDelay": 0
+            "autoRotateInactivityDelay": 0,
+            "mouseZoom": false // allows scrolling past the viewer
         });
         
         // Hide loading indicator when image finishes loading
@@ -1034,31 +1069,21 @@ footer{
                 const vrContainer = document.getElementById('vr-overlay');
                 
                 const handleInteraction = (e) => {
-                    // Ignore close button interaction
                     if (e && e.target && e.target.classList && e.target.classList.contains('vr-close')) return;
                     
                     hasInteractedWithVR = true;
                     prompt.classList.remove('show-prompt');
                     
-                    // Explicitly stop auto-rotation
                     if (viewer) {
-                        // Some versions of Pannellum support stopAutoRotate
                         if (typeof viewer.stopAutoRotate === 'function') {
                             viewer.stopAutoRotate();
                         } else if (typeof viewer.setPitch === 'function') {
-                            // Setting pitch/yaw interrupts auto-rotate
                             viewer.setPitch(viewer.getPitch());
                             viewer.setYaw(viewer.getYaw());
                         }
                     }
-                    
-                    vrContainer.removeEventListener('pointerdown', handleInteraction, { capture: true });
-                    vrContainer.removeEventListener('mousedown', handleInteraction, { capture: true });
-                    vrContainer.removeEventListener('touchstart', handleInteraction, { capture: true });
-                    vrContainer.removeEventListener('wheel', handleInteraction, { capture: true });
                 };
 
-                // Use capture phase (true) because Pannellum canvas might stop event propagation
                 vrContainer.addEventListener('pointerdown', handleInteraction, { capture: true });
                 vrContainer.addEventListener('mousedown', handleInteraction, { capture: true });
                 vrContainer.addEventListener('touchstart', handleInteraction, { capture: true, passive: true });
@@ -1068,14 +1093,17 @@ footer{
     }
 
     function nextVR() {
+        if (currentIndex === -1) return;
         currentIndex = (currentIndex + 1) % images360.length;
         loadPanorama();
     }
 
     function prevVR() {
+        if (currentIndex === -1) return;
         currentIndex = (currentIndex - 1 + images360.length) % images360.length;
         loadPanorama();
     }
+
 
     // Fallback if user doesn't have a default mail app
     function copyEmail(e) {
