@@ -554,11 +554,177 @@ nav{
     text-shadow: 0 2px 6px rgba(0,0,0,0.6);
 }
 
+#panorama {
+    width: 100%;
+    height: 100%;
+}
+
+#vr-loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 14px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    z-index: 10001;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.vr-loading-hidden {
+    opacity: 0 !important;
+}
+
+.vr-close {
+    position: absolute;
+    top: 30px;
+    right: 40px;
+    color: white;
+    font-size: 40px;
+    font-weight: 300;
+    cursor: pointer;
+    z-index: 10002;
+    transition: 0.3s;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    user-select: none;
+}
+
+.vr-close:hover {
+    color: #ccc;
+    transform: scale(1.1);
+}
+
+.vr-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+    font-size: 50px;
+    font-weight: 300;
+    cursor: pointer;
+    z-index: 10000;
+    padding: 20px;
+    transition: 0.3s;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    user-select: none;
+}
+
+.vr-nav:hover {
+    color: #ccc;
+    transform: translateY(-50%) scale(1.1);
+}
+
+.vr-prev { left: 20px; }
+.vr-next { right: 20px; }
+
+/* ========================= */
+/* 360 INTERACTION PROMPT */
+/* ========================= */
+
+#vr-interaction-prompt {
+    position: absolute;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    z-index: 10005;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+
+#vr-interaction-prompt.show-prompt {
+    opacity: 0.85;
+    visibility: visible;
+}
+
+.hand-icon {
+    width: 36px;
+    height: 36px;
+    stroke: white;
+    fill: none;
+    stroke-width: 1.5;
+    animation: dragHand 3s infinite cubic-bezier(0.4, 0, 0.2, 1);
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.6));
+}
+
+.prompt-text {
+    color: white;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 500;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+}
+
 @keyframes dragHand {
     0% { transform: translateX(0px); }
     25% { transform: translateX(-20px) rotate(-5deg); }
     75% { transform: translateX(20px) rotate(5deg); }
     100% { transform: translateX(0px); }
+}
+
+/* ========================= */
+/* HERO SCROLL BUTTON */
+/* ========================= */
+
+.scroll-cue-container {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    animation: floatBounce 2.5s infinite ease-in-out;
+}
+
+@keyframes floatBounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(-8px); }
+}
+
+.hero-scroll-btn {
+    padding: 14px 28px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 50px;
+    color: white;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    display: inline-block;
+}
+
+.hero-scroll-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.hero-scroll-btn:active {
+    transform: scale(0.95);
+}
+
+@media(max-width: 768px) {
+    .scroll-cue-container {
+        bottom: 30px;
+    }
+    .hero-scroll-btn {
+        padding: 12px 24px;
+        font-size: 12px;
+    }
 }
 
 /* ========================= */
@@ -796,8 +962,10 @@ footer{
     </div>
 
     <div id="panorama"></div>
-    <div id="hero-scroll-cue" style="position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); color: white; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; z-index: 5; animation: pulseClick 2s infinite ease-in-out; pointer-events: none;">
-        ↓ Scroll to discover more
+    <div id="hero-scroll-cue" class="scroll-cue-container">
+        <button class="hero-scroll-btn" onclick="scrollToContent()">
+            View Project &darr;
+        </button>
     </div>
 
 </div>
@@ -1104,6 +1272,12 @@ footer{
         loadPanorama();
     }
 
+    function scrollToContent() {
+        const nextSection = document.querySelector('.container');
+        if (nextSection) {
+            nextSection.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
 
     // Fallback if user doesn't have a default mail app
     function copyEmail(e) {
