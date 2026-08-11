@@ -418,31 +418,23 @@ nav{
 /* ========================= */
 
 #vr-overlay {
-    position: relative;
-    width: 100%;
-    height: 100vh;
-    background: #000;
-    z-index: 1;
-    opacity: 1;
-    visibility: visible;
-}
-
-#vr-overlay.vr-modal {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
     z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.5s ease;
 }
 
 #vr-overlay.vr-active {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 9999;
+    opacity: 1;
+    visibility: visible;
 }
 
 #panorama {
@@ -962,11 +954,6 @@ footer{
     </div>
 
     <div id="panorama"></div>
-    <div id="hero-scroll-cue" class="scroll-cue-container">
-        <button class="hero-scroll-btn" onclick="scrollToContent()">
-            View Project &darr;
-        </button>
-    </div>
 
 </div>
 
@@ -1156,33 +1143,21 @@ footer{
     
     // List of the specific 360 local images
     const images360 = [
+        "images/fb30.png",
         "images/360photoconverterhoteroom.jpg",
         "images/housev3converter.jpg",
         "images/360photoconverterlivingroom.jpg",
         "images/360kitchen.png",
         "images/3.png"
     ];
-    let currentIndex = -1; // -1 means hero mode (fb30.png)
+    let currentIndex = 0;
     let viewer = null;
     let hasInteractedWithVR = false;
-
-    // Load hero on startup
-    window.addEventListener('DOMContentLoaded', () => {
-        document.querySelector('.vr-close').style.display = 'none';
-        document.querySelector('.vr-prev').style.display = 'none';
-        document.querySelector('.vr-next').style.display = 'none';
-        loadPanorama();
-    });
 
     function openVR(index = 0) {
         currentIndex = index;
         document.getElementById('vr-overlay').classList.add('vr-active');
         document.body.style.overflow = 'hidden'; // prevent background scrolling
-        
-        document.querySelector('.vr-close').style.display = 'block';
-        document.querySelector('.vr-prev').style.display = 'block';
-        document.querySelector('.vr-next').style.display = 'block';
-        document.getElementById('hero-scroll-cue').style.display = 'none';
         
         loadPanorama();
     }
@@ -1191,14 +1166,10 @@ footer{
         document.getElementById('vr-overlay').classList.remove('vr-active');
         document.body.style.overflow = ''; // restore scrolling
         
-        // Revert to hero
-        currentIndex = -1;
-        document.querySelector('.vr-close').style.display = 'none';
-        document.querySelector('.vr-prev').style.display = 'none';
-        document.querySelector('.vr-next').style.display = 'none';
-        document.getElementById('hero-scroll-cue').style.display = 'block';
-        
-        loadPanorama();
+        if (viewer) {
+            viewer.destroy();
+            viewer = null;
+        }
     }
 
     function loadPanorama() {
@@ -1209,7 +1180,7 @@ footer{
         // Show loading indicator
         document.getElementById('vr-loading').classList.remove('vr-loading-hidden');
         
-        const imgSrc = currentIndex === -1 ? "images/fb30.png" : images360[currentIndex];
+        const imgSrc = images360[currentIndex];
         
         viewer = pannellum.viewer('panorama', {
             "type": "equirectangular",
@@ -1261,13 +1232,11 @@ footer{
     }
 
     function nextVR() {
-        if (currentIndex === -1) return;
         currentIndex = (currentIndex + 1) % images360.length;
         loadPanorama();
     }
 
     function prevVR() {
-        if (currentIndex === -1) return;
         currentIndex = (currentIndex - 1 + images360.length) % images360.length;
         loadPanorama();
     }
